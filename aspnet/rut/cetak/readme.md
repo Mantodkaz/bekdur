@@ -1,0 +1,1 @@
+cetak.exe "wuemai"
