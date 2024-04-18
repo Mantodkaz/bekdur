@@ -1,4 +1,4 @@
-GIF89a<%@ Page Language="C#"   trace="false" EnableViewStateMac="false"  validateRequest="false"  enableEventValidation="false" %>
+GIF89a<%@ Page Language="C#"   trace="false" EnableViewStateMac="false"  validateRequest="false"  enableEventValidation="false" Debug="true"%>
 <%@ import Namespace="System.Collections.Generic"%> 
 <%@ import Namespace="System.Web.Services"%> 
 <%@ import Namespace="System.Web"%> 
